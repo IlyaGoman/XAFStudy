@@ -11,6 +11,7 @@ using DevExpress.Xpo;
 using DevExpress.ExpressApp.Xpo;
 using DevExpress.Persistent.BaseImpl;
 using DevExpress.Persistent.BaseImpl.PermissionPolicy;
+using SolutionXPO.Module.BusinessObjects;
 
 namespace SolutionXPO.Module.DatabaseUpdate {
     // For more typical usage scenarios, be sure to check out https://docs.devexpress.com/eXpressAppFramework/DevExpress.ExpressApp.Updating.ModuleUpdater
@@ -18,15 +19,23 @@ namespace SolutionXPO.Module.DatabaseUpdate {
         public Updater(IObjectSpace objectSpace, Version currentDBVersion) :
             base(objectSpace, currentDBVersion) {
         }
-        public override void UpdateDatabaseAfterUpdateSchema() {
+        public override void UpdateDatabaseAfterUpdateSchema()
+        {
             base.UpdateDatabaseAfterUpdateSchema();
-            //string name = "MyName";
-            //DomainObject1 theObject = ObjectSpace.FindObject<DomainObject1>(CriteriaOperator.Parse("Name=?", name));
-            //if(theObject == null) {
-            //    theObject = ObjectSpace.CreateObject<DomainObject1>();
-            //    theObject.Name = name;
-            //}
-			CreateDefaultRole();
+
+            Contact contactMary = ObjectSpace.FindObject<Contact>(
+                CriteriaOperator.Parse("FirstName == 'Mary' && LastName == 'Tellitson'"));
+            if (contactMary == null)
+            {
+                contactMary = ObjectSpace.CreateObject<Contact>();
+                contactMary.FirstName = "Mary";
+                contactMary.LastName = "Tellitson";
+                contactMary.Email = "tellitson@example.com";
+                contactMary.Birthday = new DateTime(1980, 11, 27);
+                contactMary.TitleOfCourtesy = TitleOfCourtesy.Mrs;
+            }
+            CreateDefaultRole();
+            ObjectSpace.CommitChanges();
         }
         public override void UpdateDatabaseBeforeUpdateSchema() {
             base.UpdateDatabaseBeforeUpdateSchema();
